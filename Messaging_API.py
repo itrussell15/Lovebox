@@ -47,6 +47,9 @@ put_args = reqparse.RequestParser()
 put_args.add_argument("read", type = lambda x: datetime.strptime(x,'%a, %d %b %Y %T'), help = "Datetime of message read")
 put_args.add_argument("id", type = int, help = "ID of message")
 
+delete_args = reqparse.RequestParser()
+delete_args.add_argument("id", type = int, help = "ID of message")
+
 class Message(Resource):
     
     @marshal_with(r_fields)
@@ -81,6 +84,18 @@ class Message(Resource):
         new.read = datetime.datetime.now()
         db.session.commit()
         return new, 201
+    
+    def delete(self):
+        args = delete_args.parse_args()
+        ids = MessageModel.query.with_entities(MessageModel.id).all()
+        ids = [i[0] for i in ids]
+        if args["id"] in ids:
+            match = MessageModel.query.filter(MessageModel.id == args["id"])
+            db.session.delete(match.first())
+            db.session.commit()
+            return {"Message": "Message with id {} was deleted".format(args["id"])}, 200
+        else:
+            return {"Error": "ID not found"}, 400        
 
 class Base(Resource):
     def get(self):
