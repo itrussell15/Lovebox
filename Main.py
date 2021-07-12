@@ -7,4 +7,9 @@ Created on Sun Jul 11 16:26:46 2021
 
 from MessageRequest import MessageRequest
 
-req = MessageRequest("http://127.0.0.1:5000/", "Schmuck")
+url = "https://itrussell15.pythonanywhere.com/"
+url = "http://127.0.0.1:5000/"
+
+req = MessageRequest(url, "Land_Of_Schmucks")
+
+print(req.get_messages(unread = True))

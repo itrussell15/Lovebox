@@ -11,8 +11,16 @@ class MessageRequest:
     
     def __init__(self, url, user):
         self.BASE_URL = url
+        self._check_valid_username(user)
         self.user = user
-        
+    
+    def _check_valid_username(self, username):
+        r = requests.get(self.BASE_URL  + "users", params = {"username": username})
+        if r.status_code == 200:
+            return True
+        else:
+            raise Exception('''Username "{}" does not exist'''.format(username))
+    
     def get_base(self):
         r = requests.get(self.BASE_URL)
         print(r.json())
@@ -58,6 +66,6 @@ class MessageRequest:
         if r.status_code == 201:
             return r.json()
         else:
-            return {"Warning": "Not a valid response code"}
+            return r.json()["Error"]
 
 
