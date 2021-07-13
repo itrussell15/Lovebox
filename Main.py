@@ -10,6 +10,6 @@ from MessageRequest import MessageRequest
 url = "https://itrussell15.pythonanywhere.com/"
 url = "http://127.0.0.1:5000/"
 
-req = MessageRequest(url, "Land_Of_Schmucks")
+req = MessageRequest(url, "KBaer")
 
 print(req.get_messages(unread = True))

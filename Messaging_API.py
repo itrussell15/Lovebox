@@ -5,11 +5,11 @@ Created on Mon Jul  5 23:16:11 2021
 @author: Schmuck
 """
 
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Api, Resource, reqparse
-from flask_restful import fields, marshal_with, marshal, inputs
+from flask_restful import fields, marshal_with, marshal, inputs, abort
 from flask_sqlalchemy import SQLAlchemy
-import datetime, requests
+import datetime, requests, json
 
 app = Flask(__name__)
 api = Api(app)
@@ -60,7 +60,6 @@ def MessageModelArgs():
     "sender": fields.String,
     "recipient": fields.String
     }
-    
     return args
     
 def UserModelArgs():
@@ -84,21 +83,33 @@ def UserModelArgs():
         }
     return args
     
-    
 message_args = MessageModelArgs()
 user_args = UserModelArgs()
+
+def load_keys():
+    with open("Secrets.json", "r") as f:
+        data = json.load(f)
+    return data
+
+def check_valid_key(headers):
+    keys = load_keys()
+    if headers['Key'] in keys["Keys"]:
+        return True
+    else:
+        abort(401)
 
 class Message(Resource):
     
     def check_valid_user(self, username):
         r = requests.get(BASE_URL + "/users", params = {"username": username})
-        if r.status_code == 200:
+        if r.ok:
             return True
         else:
             return False
     
     @marshal_with(message_args["fields"])
     def get(self):
+        check_valid_key(request.headers)
         args = message_args["GET"].parse_args()
         if args['get_all']:
             query = MessageModel.query
@@ -109,6 +120,7 @@ class Message(Resource):
             return query.all(), 200
     
     def post(self):
+        check_valid_key(request.headers)
         args = message_args["POST"].parse_args()
         if self.check_valid_user(args["recipient"]):
             message = MessageModel(
@@ -126,6 +138,7 @@ class Message(Resource):
     
     @marshal_with(message_args["fields"])
     def put(self):
+        check_valid_key(request.headers)
         args = message_args["PUT"].parse_args()
         match = MessageModel.query.filter(MessageModel.id == args["id"])
         new = match.first()
@@ -134,6 +147,7 @@ class Message(Resource):
         return new, 201
     
     def delete(self):
+        check_valid_key(request.headers)
         args = message_args["DELETE"].parse_args()
         ids = MessageModel.query.with_entities(MessageModel.id).all()
         ids = [i[0] for i in ids]
@@ -154,7 +168,8 @@ class User(Resource):
         else:
             return False
     
-    def get(self):
+    def get(self): 
+        check_valid_key(request.headers)
         args = user_args["GET"].parse_args()
         if self.username_exists(args["username"]):
             match = UserModel.query.filter(UserModel.username == args["username"])
@@ -163,6 +178,7 @@ class User(Resource):
             return {'Error': "Username not found"}, 400
          
     def post(self):
+        check_valid_key(request.headers)
         args = user_args["POST"].parse_args()
         if not self.username_exists(args["username"]):
             user = UserModel(
@@ -179,6 +195,7 @@ class User(Resource):
         
 @app.route("/users/all")
 def get_all():
+    check_valid_key(request.headers)
     users = [i.username for i in UserModel.query.all()]
     return {"Users": users}, 200
 
@@ -188,8 +205,7 @@ class Base(Resource):
 
 api.add_resource(Base, "/")
 api.add_resource(Message, 
-                 "/messages",
-                 "/messages/all")
+                 "/messages")
 api.add_resource(User, 
                  "/users")
 

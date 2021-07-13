@@ -5,7 +5,7 @@ Created on Thu Jul  8 19:23:55 2021
 @author: Schmuck
 """
 
-import requests
+import requests, json
 
 class MessageRequest:
     
@@ -13,6 +13,10 @@ class MessageRequest:
         self.BASE_URL = url
         self._check_valid_username(user)
         self.user = user
+        self.key = self._load_key()
+        
+    def _load_key():
+        pass
     
     def _check_valid_username(self, username):
         r = requests.get(self.BASE_URL  + "users", params = {"username": username})
@@ -32,7 +36,7 @@ class MessageRequest:
             "recipient": recipient
             }
         r = requests.post(self.BASE_URL + "messages", params = params)
-        if r.status_code == 201:
+        if r.ok:
             return r.json()
         else:
             return {"Warning": "Not a valid response code"}
@@ -42,7 +46,7 @@ class MessageRequest:
             "get_all": not unread
             }
         r = requests.get(self.BASE_URL + "messages", params = params)
-        if r.status_code == 200:
+        if r.ok:
             data = r.json()
             if len(data) > 0:
                 if unread:
@@ -63,9 +67,7 @@ class MessageRequest:
             "id": message_id
             }
         r = requests.put(self.BASE_URL + 'messages', params = params)
-        if r.status_code == 201:
+        if r.ok:
             return r.json()
         else:
             return r.json()["Error"]
-
-
