@@ -5,21 +5,22 @@ Created on Thu Jul  8 19:23:55 2021
 @author: Schmuck
 """
 
-import requests, json
+import requests
 
 class MessageRequest:
     
     def __init__(self, url, user):
         self.BASE_URL = url
+        self.key = "asklfghalskgha"
         self._check_valid_username(user)
         self.user = user
-        self.key = self._load_key()
-        
+          
     def _load_key():
         pass
     
     def _check_valid_username(self, username):
-        r = requests.get(self.BASE_URL  + "users", params = {"username": username})
+        headers = {"Key": self.key}
+        r = requests.get(self.BASE_URL  + "users", params = {"username": username}, headers = headers)
         if r.status_code == 200:
             return True
         else:
@@ -35,7 +36,8 @@ class MessageRequest:
             "user": self.user,
             "recipient": recipient
             }
-        r = requests.post(self.BASE_URL + "messages", params = params)
+        headers = {"Key": self.key}
+        r = requests.post(self.BASE_URL + "messages", params = params, headers = headers)
         if r.ok:
             return r.json()
         else:
@@ -45,7 +47,8 @@ class MessageRequest:
         params = {
             "get_all": not unread
             }
-        r = requests.get(self.BASE_URL + "messages", params = params)
+        headers = {"Key": self.key}
+        r = requests.get(self.BASE_URL + "messages", params = params, headers = headers)
         if r.ok:
             data = r.json()
             if len(data) > 0:
@@ -66,7 +69,8 @@ class MessageRequest:
         params = {
             "id": message_id
             }
-        r = requests.put(self.BASE_URL + 'messages', params = params)
+        headers = {"Key": self.key}
+        r = requests.put(self.BASE_URL + 'messages', params = params, headers = headers)
         if r.ok:
             return r.json()
         else:

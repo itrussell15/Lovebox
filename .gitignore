@@ -1,3 +1,4 @@
 database.db
 __pycache__/
 Secrets.json
+chromedriver.exe

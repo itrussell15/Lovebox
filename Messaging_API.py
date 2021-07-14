@@ -5,11 +5,11 @@ Created on Mon Jul  5 23:16:11 2021
 @author: Schmuck
 """
 
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_restful import Api, Resource, reqparse
 from flask_restful import fields, marshal_with, marshal, inputs, abort
 from flask_sqlalchemy import SQLAlchemy
-import datetime, requests, json
+import datetime, requests, json, os
 
 app = Flask(__name__)
 api = Api(app)
@@ -101,11 +101,7 @@ def check_valid_key(headers):
 class Message(Resource):
     
     def check_valid_user(self, username):
-        r = requests.get(BASE_URL + "/users", params = {"username": username})
-        if r.ok:
-            return True
-        else:
-            return False
+        return UserModel.query.all()
     
     @marshal_with(message_args["fields"])
     def get(self):
@@ -120,7 +116,7 @@ class Message(Resource):
             return query.all(), 200
     
     def post(self):
-        check_valid_key(request.headers)
+        # check_valid_key(request.headers)
         args = message_args["POST"].parse_args()
         if self.check_valid_user(args["recipient"]):
             message = MessageModel(
@@ -201,7 +197,11 @@ def get_all():
 
 class Base(Resource):
     def get(self):
-        return "HI, WELCOME TO THE PAGE"
+        return "YOUR MOM LIKES ME"
+
+# @app.route("/")
+# def home():
+#     return app.send_static_file(os.getcwd() + "\your_mom.html")
 
 api.add_resource(Base, "/")
 api.add_resource(Message, 
