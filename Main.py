@@ -17,9 +17,9 @@ def create_html(message):
         file = f.read()
 
     file = file.format(message["content"], message["sender"])
-    with open("output.html", "w") as f:
+    with open("templates\output.html", "w") as f:
         f.write(file)
-    webbrowser.open("output.html")
+    webbrowser.open("templates\output.html", new = 2)
 
 # def update_read(message):
 #     req.message_read(message["id"])
@@ -30,11 +30,12 @@ def create_driver():
     return webdriver.Chrome(executable_path=os.getcwd() + "\\chromedriver.exe")
     
 
-driver = create_driver()
-# req = MessageRequest(url, "Land_Of_Schmucks")
-# messages = req.get_messages()
+# driver = create_driver()
+req = MessageRequest(url, "Land_Of_Schmucks")
+messages = req.get_messages()
 
-# if "unread" in messages:
-#     print(messages["unread"][0]["content"])
+if "unread" in messages:
+    print(messages["unread"][0]["content"])
+    create_html(messages["unread"][0])
 # else:
     
