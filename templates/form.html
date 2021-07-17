@@ -1,0 +1,61 @@
+<head>
+    <style>
+      .base {
+        color: white;
+        font-family: Helvetica, sans-serif;
+        padding-left:10px
+    }
+    .small_text{
+      position: absolute;
+      left: 190px
+    }
+    .big_text{
+      padding-left:10px;
+    }
+    .button_span{
+      padding-left: 10px;
+    }
+    .button{
+      padding-left:30px;
+      padding-right: 30px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      font-size: 150%;
+      margin-top: 0px
+    }
+    </style>
+</head>
+
+<body style="background-color: black; padding-left: 10px">
+
+<h1 style="color:white">
+  Welcome to Messager
+</h1>
+
+<form method = "post" action = "/">
+  <p class="base" style="padding-top:0px">
+    Sender Username:
+
+    <span class="small_text">
+      <input type="text" name="sender" placeholder = "Your Username">
+    </span>
+  </p>
+
+  <p class = "base">
+    Recipient Username:
+    <span class = "small_text">
+      <input type="text" name="recipient" placeholder="Username">
+    </span>
+  </p>
+
+  <p class = "base">Message</p>
+  <span class = "big_text">
+    <textarea name="content" rows="10" cols="60" placeholder="Your message goes here"></textarea>
+  </span>
+
+
+  <br>
+  <span class="button_span">
+    <input type = "submit" class = "button" name = "button" value = "Send">
+  </span>
+</form>

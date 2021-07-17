@@ -27,7 +27,7 @@ class MessageModel(db.Model):
     recipient = db.Column(db.String(30), nullable = False)
     
 class UserModel(db.Model):
-    username = db.Column(db.String, primary_key = True)
+    username = db.Column(db.String(30), primary_key = True)
     fname = db.Column(db.String(25), nullable = False)
     lname = db.Column(db.String(40), nullable = False)
     email = db.Column(db.String(100))
@@ -97,6 +97,13 @@ def check_valid_key(headers):
         return True
     else:
         abort(401)
+        
+def username_exists(username):
+    from_db = [i[0] for i in UserModel.query.with_entities(UserModel.username).all()]
+    if username in from_db:
+        return True
+    else:
+        return False
 
 class Message(Resource):
     
@@ -121,16 +128,16 @@ class Message(Resource):
         if self.check_valid_user(args["recipient"]):
             message = MessageModel(
                     created = datetime.datetime.now(),
-                    sender = args["user"],
-                    content = args["message"],
-                    recipient = args["recipient"]
+                    sender = args["user"].lower(),
+                    recipient = args["recipient"].lower(),
+                    content = args["message"]
+                    
                 )
             db.session.add(message)
             db.session.commit()
             return marshal(message, message_args["fields"]), 201
         else:
             return {"Error": "Invalid recipient username"}, 400
-        
     
     @marshal_with(message_args["fields"])
     def put(self):
@@ -157,13 +164,6 @@ class Message(Resource):
 
 class User(Resource):
     
-    def username_exists(self, username):
-        from_db = [i[0] for i in UserModel.query.with_entities(UserModel.username).all()]
-        if username in from_db:
-            return True
-        else:
-            return False
-    
     def get(self): 
         check_valid_key(request.headers)
         args = user_args["GET"].parse_args()
@@ -176,9 +176,9 @@ class User(Resource):
     def post(self):
         check_valid_key(request.headers)
         args = user_args["POST"].parse_args()
-        if not self.username_exists(args["username"]):
+        if not username_exists(args["username"]):
             user = UserModel(
-                username = args['username'],
+                username = args['username'].lower(),
                 fname = args["fname"],
                 lname = args['lname'],
                 email = args['email']
@@ -195,15 +195,32 @@ def get_all():
     users = [i.username for i in UserModel.query.all()]
     return {"Users": users}, 200
 
-class Base(Resource):
-    def get(self):
-        return "YOUR MOM LIKES ME"
+@app.route("/", methods = ["POST", "GET"])
+def home():
+    if request.method == 'POST':
+        if request.form.get('button') == 'Send':
+            form_data = request.form
+            if username_exists(form_data["sender"]) \
+                and username_exists(form_data["recipient"]):
+                message = MessageModel(
+                    created = datetime.datetime.now(),
+                    sender = form_data["sender"].lower(),
+                    recipient = form_data["recipient"].lower(),
+                    content = form_data["content"]
+                )
+                db.session.add(message)
+                db.session.commit()
+                output = "form.html"
+            # else:
+            #     output = "message_fail.html"
 
-# @app.route("/")
-# def home():
-#     return app.send_static_file(os.getcwd() + "\your_mom.html")
+        else:
+            pass # unknown
+    elif request.method == 'GET':
+        return render_template('form.html')
+    
+    return render_template("form.html")
 
-api.add_resource(Base, "/")
 api.add_resource(Message, 
                  "/messages")
 api.add_resource(User, 
