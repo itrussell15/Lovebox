@@ -17,7 +17,6 @@ state = False
 while True:
     state = ui.check_new_message()
     if state:
-        # ui.refresh()
         a = input()    
         ui.read_message()
     time.sleep(1)

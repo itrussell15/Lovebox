@@ -56,9 +56,4 @@ class UI_Handler:
         self.driver.refresh()
             
     def show_output(self):
-        self.driver.get("file://{}".format(os.getcwd() + "\\templates\\output.html"))
-    
-    def refresh(self):
-        self.driver.refresh()
-        
-            
+        self.driver.get("file://{}".format(os.getcwd() + "\\templates\\output.html"))       
