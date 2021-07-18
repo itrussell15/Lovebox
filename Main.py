@@ -5,37 +5,20 @@ Created on Sun Jul 11 16:26:46 2021
 @author: Schmuck
 """
 
-from MessageRequest import MessageRequest
-import webbrowser, os
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+from UI_Handler import UI_Handler
+import time
 
-url = "https://itrussell15.pythonanywhere.com/"
+# url = "https://itrussell15.pythonanywhere.com/"
+url = "http://127.0.0.1:5000/"
 
-def create_html(message):
-    with open('message.html', "r") as f:
-        file = f.read()
+ui = UI_Handler("Land_Of_Schmucks", url)
+state = False
 
-    file = file.format(message["content"], message["sender"])
-    with open("templates\output.html", "w") as f:
-        f.write(file)
-    webbrowser.open("templates\output.html", new = 2)
+while True:
+    state = ui.check_new_message()
+    if state:
+        # ui.refresh()
+        a = input()    
+        ui.read_message()
+    time.sleep(1)
 
-# def update_read(message):
-#     req.message_read(message["id"])
-    
-def create_driver():
-    options = Options()
-    options.add_argument("--kiosk")
-    return webdriver.Chrome(executable_path=os.getcwd() + "\\chromedriver.exe")
-    
-
-# driver = create_driver()
-req = MessageRequest(url, "Land_Of_Schmucks")
-messages = req.get_messages()
-
-if "unread" in messages:
-    print(messages["unread"][0]["content"])
-    create_html(messages["unread"][0])
-# else:
-    

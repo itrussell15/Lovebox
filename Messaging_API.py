@@ -100,7 +100,7 @@ def check_valid_key(headers):
         
 def username_exists(username):
     from_db = [i[0] for i in UserModel.query.with_entities(UserModel.username).all()]
-    if username in from_db:
+    if username.lower() in from_db:
         return True
     else:
         return False
@@ -167,8 +167,8 @@ class User(Resource):
     def get(self): 
         check_valid_key(request.headers)
         args = user_args["GET"].parse_args()
-        if self.username_exists(args["username"]):
-            match = UserModel.query.filter(UserModel.username == args["username"])
+        if username_exists(args["username"]):
+            match = UserModel.query.filter(UserModel.username == args["username"].lower())
             return marshal(match.first(), user_args["fields"])
         else:
             return {'Error': "Username not found"}, 400

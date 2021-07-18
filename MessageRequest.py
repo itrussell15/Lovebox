@@ -11,17 +11,19 @@ class MessageRequest:
     
     def __init__(self, url, user):
         self.BASE_URL = url
-        self.key = "asklfghalskgha"
+        # self.key = "asklfghalskgha"
+        self.key = "password"
         self._check_valid_username(user)
-        self.user = user
+        self.user = user.lower()
           
     def _load_key():
         pass
     
     def _check_valid_username(self, username):
         headers = {"Key": self.key}
-        r = requests.get(self.BASE_URL  + "users", params = {"username": username}, headers = headers)
-        if r.status_code == 200:
+        r = requests.get(self.BASE_URL  + "users", params = {"username": username.lower()}, headers = headers)
+        # print(r.json())
+        if not "Error" in r.json().keys():
             return True
         else:
             raise Exception('''Username "{}" does not exist'''.format(username))
@@ -57,7 +59,10 @@ class MessageRequest:
                     for i in data:
                         if i["recipient"] == self.user:
                             out.append(i)
-                    return {"unread" : out}
+                    if len(out) > 0:
+                        return {"unread" : out}
+                    else:
+                        return {'Warning': "No unread messages found"}
                 else:
                     return {'all_messages' : data}
             else:
