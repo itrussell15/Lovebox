@@ -14,17 +14,21 @@ class UI_Handler:
     
     def __init__(self, username, url):
         self.url = url
-        self.req = MessageRequest(url, username)
+        self.req = MessageRequest(url, username, "asklfghalskgha")
         self.driver = self._create_driver()
         self.show_output()
         self.current_message = None
         
     def _create_driver(self):
+        print("Creating driver")
         options = Options()
         options.add_argument("--kiosk")
-        return webdriver.Chrome(executable_path=os.getcwd() + "\\chromedriver.exe")
+        # return webdriver.Chrome(executable_path=os.getcwd() + "\\chromedriver.exe", options = options)
+        return webdriver.Chrome(executable_path="usr/lib/chromium-browser/chromedriver", options = options)
+        
     
     def check_new_message(self):
+        print("Checking Messages")
         r = self.req.get_messages()
         if "unread" in r.keys():
             message = r["unread"][0]

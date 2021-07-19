@@ -8,8 +8,8 @@ Created on Sun Jul 11 16:26:46 2021
 from UI_Handler import UI_Handler
 import time
 
-# url = "https://itrussell15.pythonanywhere.com/"
-url = "http://127.0.0.1:5000/"
+url = "https://itrussell15.pythonanywhere.com/"
+# url = "http://127.0.0.1:5000/"
 
 ui = UI_Handler("Land_Of_Schmucks", url)
 state = False

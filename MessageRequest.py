@@ -9,10 +9,11 @@ import requests
 
 class MessageRequest:
     
-    def __init__(self, url, user):
+    def __init__(self, url, user, key):
         self.BASE_URL = url
+        self.key = key
         # self.key = "asklfghalskgha"
-        self.key = "password"
+        # self.key = "password"
         self._check_valid_username(user)
         self.user = user.lower()
           
