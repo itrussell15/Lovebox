@@ -56,10 +56,10 @@ class MessageRequest:
         if r.ok:
             data = r.json()
             if unread:
-                if len(data) > 0:
-                    df = pd.DataFrame.from_records(data)
-                    df = df.set_index("id")
-                    messages = df[df["recipient"] == self.user]
+                df = pd.DataFrame.from_records(data)
+                df = df.set_index("id")
+                messages = df[df["recipient"] == self.user]
+                if len(messages) > 0:
                     return {'unread': messages.to_dict("index")}
                 else:
                     return {"Warning": "No messages were found"}

@@ -12,8 +12,8 @@ import time
 from threading import Timer
 import logging
 
-# url = "https://itrussell15.pythonanywhere.com/"
-url = "http://127.0.0.1:5000/"
+url = "https://itrussell15.pythonanywhere.com/"
+# url = "http://127.0.0.1:5000/"
 
 def setup_logging():
     log_format = '%(asctime)s %(message)s'
@@ -24,43 +24,22 @@ def setup_logging():
     return logging.getLogger("LoveboxLogger")
 
 
-ui = UI_Handler("Land_Of_Schmucks", url)
-ui.timer.start()
-# t = Timer(5, ui.check_new_message)
-# t.start()
-
-# req = MessageRequest(url, "Land_Of_Schmucks", "password")
-# out = req.get_messages()
-
-
-
-
 # gpio = GPIO_Handler(led = 18, light = 4)
-# log = setup_logging()
-# message = False
+log = setup_logging()
+ui = UI_Handler("Land_Of_Schmucks", url)
+ui.check_new_messages()
+timer = ui.SetTimer()
 
-while True:
-    pass
-    
-#     if ui.check_new_message() or ui.unread_messages:
-#         print(ui.unread_messages)
-#         message_id = ui.queue_message()
-#         print("Message Queued, Waiting for input")
-#         a = input()
-#         ui.read_message(message_id)
-#     # else:
-#     #     ui.output_no_message()
-#     time.sleep(60)
-
-# while True:
-#     state = ui.check_new_message()
-#     if message:
-#         ui.queue_message()
-#         gpio.flash_light()
-#         print("Message Queued, waiting for input")
-#         gpio.light.wait_for_dark()
-#         print("Message read")
-#         ui.read_message()
-#         time.sleep(0.5 )
-#     time.sleep(1)
-
+try:
+    while True:
+        
+        if ui.unread_messages:
+            message_id = ui.queue_message()
+            print(ui.unread_messages[message_id]["content"])
+            input("Acknowledege")
+            ui.read_message(message_id)
+            
+        time.sleep(1)
+except Exception as e:
+    # log.log("The program exitied with the following error: " + e)
+    timer.set()

@@ -9,27 +9,26 @@ from MessageRequest import MessageRequest
 import os, time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from threading import Thread
+from threading import Thread, Event
 
 class UI_Handler:
     
     def __init__(self, username, url):
         self.url = url
         self.req = MessageRequest(url, username, "password")
-        self.driver = self._create_driver()
-        self.SetTimer()
-        self.show_output()
+        # self.driver = self._create_driver()
+        # self.show_output()
         self.unread_messages = {}
         
     class Timer(Thread):
-        def __init__(self, event, function, interval = 60):
+        def __init__(self, event, function, interval):
             Thread.__init__(self)
             self.stopped = event
             self.function = function
             self.interval = interval
         
         def run(self):
-            while not self.stopped.wait():
+            while not self.stopped.wait(self.interval):
                 self.function()
         
     def _create_driver(self):
@@ -46,16 +45,16 @@ class UI_Handler:
         if "unread" in r.keys():
             messages = r["unread"]
             self.unread_messages = messages
-            return True
+            # return True
         else:
-            self.output_no_message()
+            # self.output_no_message()
             self.messages = {}
-            return False
+            # return False
 
     def queue_message(self):
         keys = list(self.unread_messages.keys())
         out = self.unread_messages[keys[0]]
-        self.create_message_html(out)
+        # self.create_message_html(out)
         return keys[0]
         
     def read_message(self, m_id):
@@ -81,5 +80,14 @@ class UI_Handler:
     def show_output(self):
         self.driver.get("file://{}".format(os.getcwd() + "\\templates\\output.html"))  
         
-    def SetTimer(self):
+    def test(self):
+        print("HELLO!")
+    
+    def SetTimer(self, interval = 60):
+        event = Event()
+        timer = self.Timer(event, self.check_new_message, interval)
+        timer.start()
+        return event 
+        
+        
         
