@@ -6,6 +6,7 @@ Created on Thu Jul  8 19:23:55 2021
 """
 
 import requests
+import pandas as pd
 
 class MessageRequest:
     
@@ -54,22 +55,18 @@ class MessageRequest:
         r = requests.get(self.BASE_URL + "messages", params = params, headers = headers)
         if r.ok:
             data = r.json()
-            if len(data) > 0:
-                if unread:
-                    out = []
-                    for i in data:
-                        if i["recipient"] == self.user:
-                            out.append(i)
-                    if len(out) > 0:
-                        return {"unread" : out}
-                    else:
-                        return {'Warning': "No unread messages found"}
+            if unread:
+                df = pd.DataFrame.from_records(data)
+                df = df.set_index("id")
+                messages = df[df["recipient"] == self.user]
+                if len(messages) > 0:
+                    return {'unread': messages.to_dict("index")}
                 else:
-                    return {'all_messages' : data}
+                    return {"Warning": "No messages were found"}
             else:
-                return {"Warning": "No messages were found"}
+                return {"all_messages": data}
         else:
-            raise Exception("Request returned with bad status code.")
+            raise Exception("Invalid Request")
             
     def message_read(self, message_id):
         params = {
