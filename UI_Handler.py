@@ -19,6 +19,7 @@ class UI_Handler:
         self.driver = self._create_driver()
         self.show_output()
         self.unread_messages = {}
+        self.request_count = 0
         
     class Timer(Thread):
         def __init__(self, event, function, interval):
@@ -41,7 +42,8 @@ class UI_Handler:
     def check_new_message(self):
         # print("Checking Messages")
         r = self.req.get_messages()
-        print("Message Request made")
+        print("Message Request made: {}".format(self.request_count))
+        self.request_count += 1
         if "unread" in r.keys():
             messages = r["unread"]
             self.unread_messages = messages

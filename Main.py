@@ -47,7 +47,7 @@ while True:
         ui.read_message(message_id)
         gpio.led.off()
     else:
-        print("No unread messages")
+        #print("No unread messages")
         ui.output_no_message()
         
     time.sleep(1)
