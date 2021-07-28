@@ -10,6 +10,7 @@ import os, time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from threading import Thread, Event
+import requests
 
 class UI_Handler:
     
@@ -30,7 +31,12 @@ class UI_Handler:
         
         def run(self):
             while not self.stopped.wait(self.interval):
-                self.function()
+                try:
+                    self.function()
+                except Exception as e:
+                    if e == requests.exceptions.ConnectionError:
+                        print("Matching Error")
+                    raise requests.exceptions.ConnectionError
         
     def _create_driver(self):
         print("Creating driver")

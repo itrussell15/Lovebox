@@ -45,6 +45,7 @@ while True:
             gpio.light.wait_for_dark()
             ui.read_message(message_id)
             gpio.led.off()
+            print("Message Read")
         else:
             #print("No unread messages")
             ui.output_no_message()
@@ -53,9 +54,12 @@ while True:
     except Exception as e:
         if e == requests.exceptions.ConnectionError:
             time.sleep(60)
+            timer.set()
             message = "Connection Error occured, waiting and attemping again"
             log.error(message)
             print(message)
+            ui = UI_Handler("Land_Of_Schmucks", url)
+            timer = ui.SetTimer()
         else:
             log.error(e.message)
             print(e.message)
