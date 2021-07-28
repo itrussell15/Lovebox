@@ -49,7 +49,10 @@ class MessageRequest:
             "get_all": not unread
             }
         headers = {"Key": self.key}
-        r = requests.get(self.BASE_URL + "messages", params = params, headers = headers)
+        r = requests.get(self.BASE_URL + "messages", 
+                          params = params, 
+                          headers = headers)
+                          # timeout = 5)
         if r.ok:
             data = r.json()
             if unread:
