@@ -17,9 +17,6 @@ class MessageRequest:
         # self.key = "password"
         self._check_valid_username(user)
         self.user = user.lower()
-          
-    def _load_key():
-        pass
     
     def _check_valid_username(self, username):
         headers = {"Key": self.key}

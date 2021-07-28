@@ -16,8 +16,8 @@ class UI_Handler:
     def __init__(self, username, url):
         self.url = url
         self.req = MessageRequest(url, username, "asklfghalskgha")
-        self.driver = self._create_driver()
-        self.show_output()
+        # self.driver = self._create_driver()
+        # self.show_output()
         self.unread_messages = {}
         self.request_count = 0
         
