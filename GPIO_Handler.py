@@ -10,9 +10,10 @@ import time
 
 class GPIO_Handler:
     
-    def __init__(self, led, light):
+    def __init__(self, led, magnet):
         self.led = gpio.PWMLED(led)
-        self.light = gpio.LightSensor(light, charge_time_limit = 0.2)
+        self.magnet = gpio.Button(magnet)
+        # self.light = gpio.LightSensor(light, charge_time_limit = 0.2)
         self.led.off()
         
     def flash_light(self):
